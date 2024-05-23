@@ -32,3 +32,17 @@ func NewUser(name, email, username, password string, age int) *User {
 		IsActive:  true,
 	}
 }
+
+func UpdateUser(name, email, username, password string, age int) *User {
+	return &User{
+		ID:        uuid.New().String(),
+		Name:      name,
+		Email:     email,
+		Username:  username,
+		Password:  password,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Age:       age,
+		IsActive:  true,
+	}
+}

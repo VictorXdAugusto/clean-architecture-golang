@@ -15,6 +15,12 @@ var wireApiSet = wire.NewSet(
 
 	provideCreateUserUseCaseSet,
 
+	provideGetUseCaseSet,
+
+	provideDeleteUseCaseSet,
+
+	provideUpdateUseCaseSet,
+
 	apiHandlersSet,
 	wire.Struct(new(api.Application), "*"),
 )

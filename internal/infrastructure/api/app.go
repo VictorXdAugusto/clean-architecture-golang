@@ -9,6 +9,9 @@ import (
 type Application struct {
 	Hello      *handler.HelloHandler
 	CreateUser *handler.CreateUserHandler
+	GetUser    *handler.GetUserHandler
+	DeleteUser *handler.DeleteUserHandler
+	UpdateUser *handler.UpdateUserHandler
 }
 
 func (a *Application) Start() error {

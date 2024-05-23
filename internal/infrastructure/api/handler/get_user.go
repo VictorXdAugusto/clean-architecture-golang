@@ -1,0 +1,33 @@
+package handler
+
+import (
+	"encoding/json"
+	"go-crud/internal/application/usecase"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+type GetUserHandler struct {
+	GetUserInterface usecase.GetUserInteface
+}
+
+func (h *GetUserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodGet {
+        http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+        return
+    }
+
+    vars := mux.Vars(r)
+    id := vars["id"]
+
+    response, err := h.GetUserInterface.Execute(id)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusOK)
+    json.NewEncoder(w).Encode(response)
+}

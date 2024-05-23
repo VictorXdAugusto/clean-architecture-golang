@@ -7,5 +7,5 @@ type User interface {
 	Get(id string) (u entity.User, err error)
 	GetAll() (sc []entity.User, err error)
 	Update(id string, u entity.User) (*entity.User, error)
-	Delete(id int64) (int64, error)
+	Delete(id string) (int64, error)
 }

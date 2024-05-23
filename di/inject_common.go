@@ -3,6 +3,7 @@ package di
 import (
 	"database/sql"
 	"fmt"
+
 	_ "github.com/lib/pq" // Import the pq driver
 )
 
@@ -10,8 +11,8 @@ const (
 	host     = "localhost"
 	port     = 5432
 	user     = "admin"
-	password = "admin"
-	dbname   = "postgres"
+	password = "Postgres2024!"
+	dbname   = "gocrud"
 )
 
 func providePostgresClient() (*sql.DB, func(), error) {
