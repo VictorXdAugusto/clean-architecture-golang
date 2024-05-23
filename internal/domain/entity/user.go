@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"go-crud/internal/application/dto"
 	"time"
 
 	"github.com/google/uuid"
@@ -20,16 +19,16 @@ type User struct {
 	IsActive  bool      `json:"is_active"`
 }
 
-func NewUser(input dto.CreateUserInput) *User {
+func NewUser(name, email, username, password string, age int) *User {
 	return &User{
-		ID: uuid.New().String(),
-		Name: input.Name,
-		Email: input.Email,
-		Username: input.Username,
-		Password: input.Password,
+		ID:        uuid.New().String(),
+		Name:      name,
+		Email:     email,
+		Username:  username,
+		Password:  password,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
-		Age: input.Age,
-		IsActive: true,
+		Age:       age,
+		IsActive:  true,
 	}
 }

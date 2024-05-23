@@ -1,37 +1,39 @@
-package repository
+package di
 
 import (
 	"database/sql"
 	"fmt"
-
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // Import the pq driver
 )
 
 const (
-	host     = "127.0.0.1"
+	host     = "localhost"
 	port     = 5432
 	user     = "admin"
 	password = "admin"
 	dbname   = "postgres"
 )
 
-func DbConn() (*sql.DB, error) {
+func providePostgresClient() (*sql.DB, func(), error) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	fmt.Println("Conexão bem-sucedida!")
+	fmt.Println("Connection succeed!")
 
-	return db, nil
+	cleanup := func() {
+		_ = db.Close()
+	}
+
+	return db, cleanup, nil
 }

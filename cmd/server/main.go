@@ -1,8 +1,19 @@
 package main
 
-import "go-crud/internal/infrastructure/api"
+import (
+	"go-crud/di"
+)
 
 func main() {
-	var app api.Application
-	app.Start()
+	app, cleanup, err := di.InitializeApi()
+	if err != nil {
+		panic(err)
+	}
+
+	err = app.Start()
+	if err != nil {
+		panic(err)
+	}
+
+	cleanup()
 }

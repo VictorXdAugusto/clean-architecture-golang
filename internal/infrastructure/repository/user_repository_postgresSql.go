@@ -1,11 +1,8 @@
 package repository
 
 import (
-	"go-crud/internal/domain/entity"
-
 	"database/sql"
-
-	_ "github.com/lib/pq"
+	"go-crud/internal/domain/entity"
 )
 
 type UserPostgress struct {
@@ -13,103 +10,60 @@ type UserPostgress struct {
 }
 
 func NewUserPostgress(client *sql.DB) *UserPostgress {
-	client, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/test")
-
-	if err != nil {
-		panic(err)
-	}
-
-	userDB := &UserPostgress{
+	return &UserPostgress{
 		Client: client,
 	}
-
-	return userDB
 }
 
 func (db *UserPostgress) Insert(u entity.User) (id string, err error) {
-	conn := db.Client
-	if err != nil {
-		return
-	}
-	defer conn.Close()
-
-	sql := `INSERT INTO categorias (nome) VALUES ($1) RETURNING id`
-
-	err = conn.QueryRow(sql, u.Name).Scan(&id)
-
-	return id, nil
+	sql := `INSERT INTO "user" (nome) VALUES ($1) RETURNING id`
+	err = db.Client.QueryRow(sql, u.Name).Scan(&id)
+	return id, err
 }
 
 func (db *UserPostgress) Get(id string) (u entity.User, err error) {
-	conn := db.Client
-	if err != nil {
-		return
-	}
-	defer conn.Close()
-
-	row := conn.QueryRow(`SELECT * FROM users WHERE id=$1`, id)
-
+	row := db.Client.QueryRow(`SELECT * FROM "user" WHERE id=$1`, id)
 	err = row.Scan(&u.ID, &u.Name)
-
-	return 
+	return u, err
 }
 
 func (db *UserPostgress) GetAll() (sc []entity.User, err error) {
-	conn := db.Client
-
+	rows, err := db.Client.Query(`SELECT * FROM "user"`)
 	if err != nil {
-		return
-	}
-	defer conn.Close()
-
-	rows, err := conn.Query(`SELECT * FROM categorias`)
-	if err != nil {
-		return
+		return nil, err
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		var u entity.User
-
 		err = rows.Scan(&u.ID, &u.Name)
 		if err != nil {
 			continue
 		}
-
 		sc = append(sc, u)
 	}
 
-	return
+	return sc, rows.Err()
 }
 
 func (db *UserPostgress) Update(id string, u entity.User) (*entity.User, error) {
-	conn := db.Client
-	defer conn.Close()
-
-	_ , err := conn.Exec(`UPDATE users SET nome=$2 WHERE id=$1`, id, u.Name)
+	_, err := db.Client.Exec(`UPDATE "user" SET nome=$2 WHERE id=$1`, id, u.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	new, err := db.Get(id)
+	updatedUser, err := db.Get(id)
 	if err != nil {
 		return nil, err
 	}
 
-	return &new, err
+	return &updatedUser, nil
 }
 
-func (db *UserPostgress) Delete(id int64) (int64, error) {
-	conn := db.Client
+func (db *UserPostgress) Delete(id string) (int64, error) { // changed id type to string for consistency
+	res, err := db.Client.Exec(`DELETE FROM "user" WHERE id=$1`, id)
 	if err != nil {
-		return
+		return 0, err
 	}
-	defer conn.Close()
-
-	res, err := db.Exec(`DELETE FROM users WHERE id=$1`, id)
-	if err != nil {
-		return err
-	}
-
 	return res.RowsAffected()
 }
